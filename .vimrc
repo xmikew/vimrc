@@ -2,7 +2,6 @@ set nocompatible              " be iMproved, required
 set tabstop=2
 set shiftwidth=2
 set noexpandtab
-set smartindent
 set hlsearch
 set showmatch
 set matchtime=5
@@ -39,7 +38,8 @@ nnoremap <leader>] :tabnext<cr>
 : autocmd BufNewFile,BufRead *.tt2?,*.tmpl set filetype=html
 : autocmd FileType perl set syntax=perl
 : autocmd FileType html set syntax=html
-: autocmd BufWritePre *.t,*.p[lm] %s/\s\+$//e
+" Too much already badly indented code
+": autocmd BufWritePre *.t,*.p[lm] %s/\s\+$//e
 :augroup ENm
 
 " Stole from sartak blog => Amablue's function
