@@ -11,6 +11,8 @@ call vundle#rc()
 " let Vundle manage Vundle, required
 Bundle 'gmarik/vundle'
 Bundle 'Valloric/YouCompleteMe'
+Bundle 'vim-scripts/IndentConsistencyCop'
+Bundle 'yaifa'
 
 " The following are examples of different formats supported.
 " Keep bundle commands between here and filetype plugin indent on.
@@ -46,7 +48,6 @@ filetype plugin indent on     " required
 set tabstop=2
 set shiftwidth=2
 set expandtab
-set smartindent
 set hlsearch
 set showmatch
 set matchtime=5
@@ -83,21 +84,28 @@ nnoremap <leader>] :tabnext<cr>
 : autocmd BufNewFile,BufRead *.tt2?,*.tmpl set filetype=html
 : autocmd FileType perl set syntax=perl
 : autocmd FileType html set syntax=html
-: autocmd BufWritePre *.t,*.p[lm] %s/\s\+$//e
-:augroup ENm
+" Disable due to issue when modifying FOSS
+": autocmd BufWritePre *.t,*.p[lm] %s/\s\+$//e
+:augroup END
 
 " Stole from sartak blog => Amablue's function
 " Call with <leader><space> for non-perl files..
 function! <sid>StripTrailingWhitespace()
-    " Preparation: save last search, and cursor position.
-    let _s=@/
-    let l = line(".")
-    let c = col(".")
-    " Do the business:
-    %s/\s\+$//e
-    " Clean up: restore previous search history, and cursor position
-    let @/=_s
-    call cursor(l, c)
+  " Preparation: save last search, and cursor position.
+  let _s=@/
+  let l = line(".")
+  let c = col(".")
+  " Do the business:
+  %s/\s\+$//e
+  " Clean up: restore previous search history, and cursor position
+  let @/=_s
+  call cursor(l, c)
 endfunction
 
 nnoremap <silent> <leader><space> :call <sid>StripTrailingWhitespace()<cr>
+
+" indent cop
+nnoremap <silent> <leader>ic :IndentConsistencyCop<cr>
+
+" set indent
+nnoremap <silent> <leader>si :YAIFAMagic<cr> 
