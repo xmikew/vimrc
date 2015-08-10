@@ -10,7 +10,6 @@ call vundle#rc()
 
 " let Vundle manage Vundle, required
 Bundle 'gmarik/vundle'
-Bundle 'Valloric/YouCompleteMe'
 Bundle 'vim-scripts/IndentConsistencyCop'
 Bundle 'yaifa'
 
@@ -71,22 +70,61 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 " debug vim
 nnoremap <leader>v0 :set verbose=0<cr>
 nnoremap <leader>v5 :set verbose=5<cr>
-nnoremap <leader>v9 :set verbose=9<cr>
 
 " flip between tabs
-nnoremap <leader>[ :tabprev<cr>
-nnoremap <leader>] :tabnext<cr>
+nnoremap <C-h> :tabprevious<cr>
+nnoremap <C-l> :tabnext<cr>
 
-" perl autocmds and maps
-:augroup perl_file
+:augroup prog_group
 : autocmd!
 : autocmd BufNewFile,BufRead *.t,*.p[lm] set filetype=perl
-: autocmd BufNewFile,BufRead *.tt2?,*.tmpl set filetype=html
+: autocmd BufNewFile,BufRead *.tt,*.tt2,*.tmpl set filetype=html
+
+" PERL autocmds
 : autocmd FileType perl set syntax=perl
+" shortcut for normal mode to run on entire buffer then return to current line"
+: autocmd Filetype perl nmap <F2> :call DoPerlTidy()<CR>
+" shortcut for visual mode to run on the the current visual selection"
+: autocmd Filetype perl vmap <F2> :PerlTidy<CR>
+
+" HTML autocmds
 : autocmd FileType html set syntax=html
+: autocmd Filetype html nmap <F2> :call DoHTMLTidy()<CR>
+
+" JS autocmds
+" need tidy program
 " Disable due to issue when modifying FOSS
 ": autocmd BufWritePre *.t,*.p[lm] %s/\s\+$//e
+
+"
 :augroup END
+
+" Stolen from: http://stackoverflow.com/questions/2345519/how-can-i-script-vim-to-run-perltidy-on-a-buffer
+" define :Tidy command to run perltidy on visual selection || entire buffer"
+command! -range=% -nargs=* PerlTidy <line1>,<line2>!perltidy <args>
+command! -range=% -nargs=* HTMLTidy <line1>,<line2>!tidy <args>
+
+" run :Tidy on entire buffer and return cursor to (approximate) original position"
+function! DoPerlTidy()
+  let tidy_params = ['-l=0']
+  :call add(tidy_params, '-i=' . &tabstop)
+
+  if &expandtab
+    :call add(tidy_params, '-t -nola -et=' . &tabstop)
+  endif
+
+  let l = line(".")
+  let c = col(".")
+  exe "PerlTidy " . join(tidy_params)
+  call cursor(l, c)
+endfun
+
+function! DoHTMLTidy()
+  let l = line(".")
+  let c = col(".")
+  :HTMLTidy --indent yes --wrap 0 --tidy-mark no --force-output true -quiet --show-errors 0 --show-warnings 0
+  call cursor(l,c)
+endfun
 
 " Stole from sartak blog => Amablue's function
 " Call with <leader><space> for non-perl files..
@@ -108,4 +146,4 @@ nnoremap <silent> <leader><space> :call <sid>StripTrailingWhitespace()<cr>
 nnoremap <silent> <leader>ic :IndentConsistencyCop<cr>
 
 " set indent
-nnoremap <silent> <leader>si :YAIFAMagic<cr> 
+nnoremap <silent> <leader>si :YAIFAMagic<cr>
