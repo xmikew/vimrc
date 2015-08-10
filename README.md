@@ -1,7 +1,17 @@
 vimrc
 =====
 
-repository for my vimrc files
+Plugins
+=====
+* Vundle (vimscript)
+* YAFIA (vimscript)
+* AutoIndentCop (python)
+
+General Programming Support
+=====
+* <kbd>&lt;leader&gt;ic</kbd> - run autoindentcop on the currently open file
+* <kbd>&lt;leader&gt;si</kbd> - run YAIFA to set your indent options to match the current file
+* <kbd>&lt;leader&gt;&lt;space&gt;</kbd> - Remove all trailing whitespace from the current file
 
 Perl Support
 =====
