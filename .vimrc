@@ -86,6 +86,7 @@ nnoremap <C-l> :tabnext<cr>
 : autocmd Filetype perl nmap <F2> :call DoPerlTidy()<CR>
 " shortcut for visual mode to run on the the current visual selection"
 : autocmd Filetype perl vmap <F2> :PerlTidy<CR>
+map ,h :call doPerldoc()<CR>:set nomod<CR>:set filetype=man<CR>:echo "perldoc"<CR>
 
 " HTML autocmds
 : autocmd FileType html set syntax=html
@@ -117,6 +118,28 @@ function! DoPerlTidy()
   let c = col(".")
   exe "PerlTidy " . join(tidy_params)
   call cursor(l, c)
+endfun
+
+" integrate with PerlDoc
+" Stolen from: http://www.perlmonks.org/?node_id=441900
+function! doPerldoc()
+  normal yy
+  let l:this = @
+  if match(l:this, '^ *\(use\|require\) ') >= 0
+    exe ':new'
+    exe ':resize'
+    let l:this = substitute(l:this, '^ *\(use\|require\) *', "", "")
+    let l:this = substitute(l:this, ";.*", "", "")
+    let l:this = substitute(l:this, " .*", "", "")
+    exe ':0r!perldoc -t ' . l:this
+    exe ':0'
+    return
+  endif
+  normal yiw
+  exe ':new'
+  exe ':resize'
+  exe ':0r!perldoc -t -f ' . @
+  exe ':0'
 endfun
 
 function! DoHTMLTidy()
