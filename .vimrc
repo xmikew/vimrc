@@ -11,7 +11,9 @@ call vundle#rc()
 " let Vundle manage Vundle, required
 Bundle 'gmarik/vundle'
 Bundle 'vim-scripts/IndentConsistencyCop'
-Bundle 'yaifa'
+Bundle 'yaifa.vim'
+Bundle 'vim-misc'
+Bundle 'easytags.vim'
 
 " The following are examples of different formats supported.
 " Keep bundle commands between here and filetype plugin indent on.
@@ -63,6 +65,8 @@ set foldmethod=marker
 set foldlevel=100
 syntax on
 
+let mapleader=","
+
 " edit vimrc
 nnoremap <leader>ev :tabnew $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
@@ -75,7 +79,20 @@ nnoremap <leader>v5 :set verbose=5<cr>
 nnoremap <C-h> :tabprevious<cr>
 nnoremap <C-l> :tabnext<cr>
 
+" clear search hl
+nmap <silent> ,/ :nohlsearch<CR>
+
+set pastetoggle=<F2>
+
 :augroup prog_group
+
+" : let g:easytags_auto_update = 1
+: set tags=~/.tags
+: let g:easytags_file = '~/.vim/tags'
+: let g:easytags_by_filetype = '~/.vim/filetype_tags'
+: let g:easytags_dynamic_files = 1 
+: set omnifunc=true
+
 : autocmd!
 : autocmd BufNewFile,BufRead *.t,*.p[lm] set filetype=perl
 : autocmd BufNewFile,BufRead *.tt,*.tt2,*.tmpl set filetype=html
@@ -83,17 +100,18 @@ nnoremap <C-l> :tabnext<cr>
 " PERL autocmds
 : autocmd FileType perl set syntax=perl
 " shortcut for normal mode to run on entire buffer then return to current line"
-: autocmd Filetype perl nmap <F2> :call DoPerlTidy()<CR>
+: autocmd Filetype perl nmap <leader>t :call DoPerlTidy()<CR>
 " shortcut for visual mode to run on the the current visual selection"
-: autocmd Filetype perl vmap <F2> :PerlTidy<CR>
-map ,h :call doPerldoc()<CR>:set nomod<CR>:set filetype=man<CR>:echo "perldoc"<CR>
+: autocmd Filetype perl vmap <leader>t :PerlTidy<CR>
+: autocmd Filetype perl map <silent> <leader>h :call Perldoc()<CR><CR>
 
 " HTML autocmds
 : autocmd FileType html set syntax=html
-: autocmd Filetype html nmap <F2> :call DoHTMLTidy()<CR>
+: autocmd Filetype html nmap <leader>t :call DoHTMLTidy()<CR>
 
 " JS autocmds
 " need tidy program
+
 " Disable due to issue when modifying FOSS
 ": autocmd BufWritePre *.t,*.p[lm] %s/\s\+$//e
 
@@ -105,48 +123,77 @@ map ,h :call doPerldoc()<CR>:set nomod<CR>:set filetype=man<CR>:echo "perldoc"<C
 command! -range=% -nargs=* PerlTidy <line1>,<line2>!perltidy <args>
 command! -range=% -nargs=* HTMLTidy <line1>,<line2>!tidy <args>
 
+"allow quicker resize of windows
+nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+
 " run :Tidy on entire buffer and return cursor to (approximate) original position"
 function! DoPerlTidy()
-  let tidy_params = ['-l=0']
-  :call add(tidy_params, '-i=' . &tabstop)
+  let l:tidy_params = ['-l=0']
+  :call add(l:tidy_params, '-i=' . &tabstop)
 
   if &expandtab
-    :call add(tidy_params, '-t -nola -et=' . &tabstop)
+    call add(l:tidy_params, '-t -nola -et=' . &tabstop)
   endif
 
-  let l = line(".")
-  let c = col(".")
-  exe "PerlTidy " . join(tidy_params)
-  call cursor(l, c)
+  let l:l = line(".")
+  let l:c = col(".")
+  exe "PerlTidy " . join(l:tidy_params)
+  call cursor(l:l, l:c)
 endfun
 
 " integrate with PerlDoc
-" Stolen from: http://www.perlmonks.org/?node_id=441900
-function! doPerldoc()
-  normal yy
-  let l:this = @
-  if match(l:this, '^ *\(use\|require\) ') >= 0
-    exe ':new'
-    exe ':resize'
-    let l:this = substitute(l:this, '^ *\(use\|require\) *', "", "")
-    let l:this = substitute(l:this, ";.*", "", "")
-    let l:this = substitute(l:this, " .*", "", "")
-    exe ':0r!perldoc -t ' . l:this
-    exe ':0'
-    return
+" originally stolen from: http://www.perlmonks.org/?node_id=441900
+function! Perldoc(...)
+  let l:args = ['-t']
+  let l:keyword = 0
+  " keyword povided example directly called
+  if a:0 > 0
+    let l:keyword = a:1
+  else  
+    normal yy
+    let l:keyword = @
+    if match(l:keyword, '^ *\(use\|require\) ') >= 0
+      let l:keyword = substitute(l:keyword, '^ *\(use\|require\) *', "", "")
+      let l:keyword = substitute(l:keyword, ";.*", "", "")
+      let l:keyword = substitute(l:keyword, " .*", "", "")
+    else
+      let l:orig_keywords=&iskeyword
+      let l:keywords = l:orig_keywords . ",$"
+      exe 'setlocal iskeyword=' . l:keywords
+      " grab function or var name
+      normal yiw
+      let l:keyword = @
+      " grab esoterically named var
+      normal y2l
+      let l:var = @
+      if match(l:var, '^\$[^A-Z]') >= 0
+       let l:keyword = l:var 
+      endif
+      exe 'setlocal iskeyword=' . l:orig_keywords
+    endif
   endif
-  normal yiw
-  exe ':new'
-  exe ':resize'
-  exe ':0r!perldoc -t -f ' . @
-  exe ':0'
+
+  if match(l:keyword, '^\$') >= 0
+    " probably a var
+    call add(l:args, '-v')
+  elseif match(l:keyword, '\([A-Z]\+\|::\)') < 0
+    " probably a function
+    call add(l:args, '-f')
+  endif
+
+  split perldoc
+  resize 40
+  setlocal nomod
+  setlocal filetype=man
+  setlocal buftype=nofile
+  exe ':0r!perldoc ' . join(l:args) .  " '" . l:keyword . "'"
+  normal 1G
+  return
 endfun
 
 function! DoHTMLTidy()
-  let l = line(".")
-  let c = col(".")
   :HTMLTidy --indent yes --wrap 0 --tidy-mark no --force-output true -quiet --show-errors 0 --show-warnings 0
-  call cursor(l,c)
 endfun
 
 " Stole from sartak blog => Amablue's function
