@@ -14,27 +14,8 @@ Bundle 'vim-scripts/IndentConsistencyCop'
 Bundle 'yaifa.vim'
 Bundle 'vim-misc'
 Bundle 'easytags.vim'
+Bundle 'SuperTab'
 
-" The following are examples of different formats supported.
-" Keep bundle commands between here and filetype plugin indent on.
-" scripts on GitHub repos
-" Bundle 'tpope/vim-fugitive'
-" Bundle 'Lokaltog/vim-easymotion'
-" Bundle 'tpope/vim-rails.git'
-" The sparkup vim script is in a subdirectory of this repo called vim.
-" Pass the path to set the runtimepath properly.
-" Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
-" scripts from http://vim-scripts.org/vim/scripts.html
-" Bundle 'L9'
-" Bundle 'FuzzyFinder'
-" scripts not on GitHub
-" Bundle 'git://git.wincent.com/command-t.git'
-" git repos on your local machine (i.e. when working on your own plugin)
-" Bundle 'file:///home/gmarik/path/to/plugin'
-" ...
-
-filetype plugin indent on     " required
-"
 " Brief help
 " :BundleList          - list configured bundles
 " :BundleInstall(!)    - install (update) bundles
@@ -43,7 +24,9 @@ filetype plugin indent on     " required
 "
 " see :h vundle for more details or wiki for FAQ
 " NOTE: comments after Bundle commands are not allowed.
-
+"
+"
+filetype plugin indent on     " required
 
 " My config
 set tabstop=2
@@ -103,8 +86,8 @@ set pastetoggle=<F2>
 
 : set omnifunc=true
 " set auto-complate menu colors to be less harsh
-: set highlight PMenu    ctermbg=darkgray  ctermfg=black
-: set highlight PMenuSel ctermbg=lightgray ctermfg=darkmagenta
+: highlight Pmenu    ctermbg=DarkGray  ctermfg=Black
+: highlight PmenuSel ctermbg=LightGray ctermfg=darkmagenta
 
 : autocmd!
 : autocmd BufNewFile,BufRead *.t,*.p[lm] set filetype=perl
