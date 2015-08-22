@@ -103,8 +103,8 @@ set pastetoggle=<F2>
 
 : set omnifunc=true
 " set auto-complate menu colors to be less harsh
-: set hilight PMenu    ctermbg=darkgray  ctermfg=black
-: set hilight PMenuSel ctermbg=lightgray ctermfg=darkmagenta
+: set highlight PMenu    ctermbg=darkgray  ctermfg=black
+: set highlight PMenuSel ctermbg=lightgray ctermfg=darkmagenta
 
 : autocmd!
 : autocmd BufNewFile,BufRead *.t,*.p[lm] set filetype=perl
