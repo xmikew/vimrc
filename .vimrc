@@ -78,20 +78,33 @@ nnoremap <leader>v5 :set verbose=5<cr>
 " flip between tabs
 nnoremap <C-h> :tabprevious<cr>
 nnoremap <C-l> :tabnext<cr>
+nnoremap <A-F1> 1gt
+nnoremap <A-F2> 2gt
+nnoremap <A-F3> 3gt
+nnoremap <A-F4> 4gt
+nnoremap <A-F5> 5gt
+nnoremap <A-F6> 6gt
+nnoremap <A-F7> 7gt
+nnoremap <A-F8> 8gt
+nnoremap <A-F9> 9gt
+nnoremap <A-F0> 10gt
 
 " clear search hl
-nmap <silent> ,/ :nohlsearch<CR>
+nmap <silent> <leader>. :nohlsearch<CR>
 
 set pastetoggle=<F2>
 
 :augroup prog_group
-
 " : let g:easytags_auto_update = 1
 : set tags=~/.tags
 : let g:easytags_file = '~/.vim/tags'
 : let g:easytags_by_filetype = '~/.vim/filetype_tags'
 : let g:easytags_dynamic_files = 1 
+
 : set omnifunc=true
+" set auto-complate menu colors to be less harsh
+: set hilight PMenu    ctermbg=darkgray  ctermfg=black
+: set hilight PMenuSel ctermbg=lightgray ctermfg=darkmagenta
 
 : autocmd!
 : autocmd BufNewFile,BufRead *.t,*.p[lm] set filetype=perl
