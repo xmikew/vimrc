@@ -79,7 +79,7 @@ set pastetoggle=<F2>
 
 :augroup prog_group
 " : let g:easytags_auto_update = 1
-: set tags=~/.tags
+: set tags=~/.vim/tags
 : let g:easytags_file = '~/.vim/tags'
 : let g:easytags_by_filetype = '~/.vim/filetype_tags'
 : let g:easytags_dynamic_files = 1 
