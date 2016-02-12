@@ -15,6 +15,7 @@ Bundle 'yaifa.vim'
 Bundle 'vim-misc'
 Bundle 'easytags.vim'
 Bundle 'SuperTab'
+Bundle 'The-NERD-Tree'
 
 " Brief help
 " :BundleList          - list configured bundles
@@ -75,6 +76,9 @@ nnoremap <A-F0> 10gt
 " clear search hl
 nmap <silent> <leader>. :nohlsearch<CR>
 
+" nerdtree open close
+nnoremap <leader>nt :NERDTree<cr>
+
 set pastetoggle=<F2>
 
 :augroup prog_group
@@ -85,6 +89,13 @@ set pastetoggle=<F2>
 : let g:easytags_dynamic_files = 1 
 
 : set omnifunc=true
+" from http://vim.wikia.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE
+: set completeopt=longest,menuone
+: inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+: inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+: inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
 " set auto-complate menu colors to be less harsh
 : highlight Pmenu    ctermbg=DarkGray  ctermfg=Black
 : highlight PmenuSel ctermbg=LightGray ctermfg=darkmagenta
